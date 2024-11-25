@@ -9,7 +9,7 @@ I am creating solvers for the game Gomoku using 3 different techniques:
 ## How to play?
 There are two options of how to play against my bots:
 1. the code can be downloaded and run locally
-2. I have a [website](smnd.sk/yeti/gomoku) where you can also play
+2. I have a [website](https://smnd.sk/yeti/gomoku) where you can also play
 
 ## File structure
 - **game.js** is recreation of the game Gomoku
