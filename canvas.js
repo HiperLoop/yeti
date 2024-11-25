@@ -33,12 +33,6 @@ function drawGrid(gridSize, windowSize, canvas) {
     }
 }
 
-function load_canvas(windowSize, canvas, gridSize) {  
-    //createBoard(gridSize);
-    resizeCanvas(windowSize, canvas);
-    drawGrid(gridSize, windowSize, canvas);
-}
-
 function resize_canvas(windowSize, canvas, gridSize) {
     resizeCanvas(windowSize, canvas);
     drawGrid(gridSize, windowSize, canvas);
@@ -61,19 +55,16 @@ function drawMove(i, j, player, gridSize) {
 }
 
 function drawWin(start, end, gridSize) {
+    console.log(start + " - " + end);
     const c = document.getElementById("myCanvas");
     const ctx = c.getContext("2d");
     const rectSize = c.height/gridSize;
 
     ctx.beginPath();
-    const xStart = Math.floor(start/gridSize);
-    const yStart = start%gridSize;
-    const xEnd = Math.floor(end/gridSize);
-    const yEnd = end%gridSize;
-    ctx.moveTo(xStart*rectSize + rectSize/2, yStart*rectSize + rectSize/2);
-    ctx.lineTo(xEnd*rectSize + rectSize/2, yEnd*rectSize + rectSize/2);
+    ctx.moveTo(start[1]*rectSize + rectSize/2, start[0]*rectSize + rectSize/2);
+    ctx.lineTo(end[1]*rectSize + rectSize/2, end[0]*rectSize + rectSize/2);
     ctx.lineWidth = 10;
     ctx.stroke();
 }
 
-module.exports = {load_canvas, resize_canvas, resizeCanvas, isHigh, maxSize, drawGrid, drawMove};
+module.exports = {resize_canvas, resizeCanvas, isHigh, maxSize, drawGrid, drawMove, drawWin};
