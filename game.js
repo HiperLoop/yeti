@@ -1,16 +1,16 @@
 const {isHigh, maxSize, drawMove, drawGrid, drawWin} = require('./canvas.js');
-const {compressBoard} = require('./compression.js');
-//const {makeBotMove} = require('./alfabeta.js');
+//const {compressBoard} = require('./compression.js');
+//const {makeBotMove} = require('./bot.js');
 
-const board = [];
 let moveCounter = 0;
 const gridSize = 15;
 const winLength = 5;
+const board = new Array(gridSize * gridSize);
 let gameOver = false;
 let botFirst = false;
 const bot = -1;
 const human = 1;
-let humanVhuman = false;
+let humanVhuman = true;
 
 function createBoard() {
     for(let i = 0; i < gridSize; ++i) {
@@ -137,8 +137,8 @@ function tryMove(event, windowSize) {
     const coords = getCoordsFromEvent(event, windowSize);
     console.log(coords);
     if(board[coords[0]][coords[1]] == 0) {
-        console.log(botFirst);
-        makePlayerMove(coords[0], coords[1], humanVhuman ? (botFirst ? (moveCounter % 2 == 0 ? bot : human) : (moveCounter % 2 == 0 ? human : bot)) : human, gridSize);
+        //console.log(botFirst);
+        makePlayerMove(coords[0], coords[1], humanVhuman ? (botFirst ? (moveCounter % 2 == 0 ? bot : human) : (moveCounter % 2 == 0 ? human : bot)) : human);
         checkGameEnd(coords[0], coords[1]);
     }
 }
@@ -147,7 +147,7 @@ function gameLoop(event, windowSize, canvas) {
     if(!gameOver) {
         tryMove(event, windowSize);
 
-        /*const botMove = makeBotMove();
+        /*const botMove = makeBotMove(bot, gridSize);
         makePlayerMove(botMove[0], botMove[1], bot);
         checkGameEnd(botMove[0], botMove[1]);*/
     }
@@ -155,11 +155,11 @@ function gameLoop(event, windowSize, canvas) {
         resetGame(windowSize, canvas);
 
         if(botFirst) {
-            /*const botMove = makeBotMove();
+            /*const botMove = makeBotMove(bot, gridSize);
             makePlayerMove(botMove[0], botMove[1], bot);
             checkGameEnd(botMove[0], botMove[1]);*/
         }
     }
 }
 
-module.exports = {gridSize, tryMove, createBoard, gameLoop};
+module.exports = {gridSize, winLength, board, tryMove, createBoard, gameLoop, checkWin};

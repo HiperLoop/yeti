@@ -34,9 +34,10 @@ function drawGrid(gridSize, windowSize, canvas) {
     }
 }
 
-function resize_canvas(windowSize, canvas, gridSize) {
+function resize_canvas(windowSize, canvas, gridSize, board) {
     resizeCanvas(windowSize, canvas);
     drawGrid(gridSize, windowSize, canvas);
+    drawBoard(board, gridSize);
 }
 
 function drawMove(i, j, player, gridSize) {
@@ -55,6 +56,16 @@ function drawMove(i, j, player, gridSize) {
     ctx.stroke();
 }
 
+function drawBoard(board, gridSize) {
+    for(let i = 0; i < gridSize; ++i) {
+        for(let j = 0; j < gridSize; ++j) {
+            if(board[i][j] != 0) {
+                drawMove(i, j, board[i][j], gridSize);
+            }
+        }
+    }
+}
+
 function drawWin(start, end, gridSize) {
     console.log(start + " - " + end);
     const c = document.getElementById("myCanvas");
@@ -70,56 +81,14 @@ function drawWin(start, end, gridSize) {
 
 module.exports = {resize_canvas, resizeCanvas, isHigh, maxSize, drawGrid, drawMove, drawWin};
 },{}],2:[function(require,module,exports){
-function convertbase(from, to, input, putZero) {
-    const symbols = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var output = "";
-    var toTen = 0;
-    //console.log("input: " + input);
-    for(let i = 0; i < input.length; ++i) {
-        toTen += symbols.indexOf(input[i])*Math.pow(from, input.length - i - 1);
-    }
-
-    console.log("ten: " + toTen);
-
-    if(toTen != 0) {
-        for(;toTen > 0;) {
-            output = symbols[toTen % to] + output;
-            toTen -= (toTen % to);
-            toTen /= to;
-        }
-    }
-    else if(putZero) {output = "00000";}
-
-    return output;
-}
-
-function compressBoard(board) {
-    var outputString = "";
-    console.log(board);
-    var boardString = "";
-    var putZero = false;
-    for(let i = 0; i < board[0].length; ++i) {
-        var boardString = "";
-        for(let j = 0; j < board[0].length; ++j) {
-            boardString += board[i][j].toString();
-        }
-        outputString += convertbase(3, 62, boardString, putZero);
-        if(outputString != "" || i == 13) {putZero = true;}
-    }
-    outputString = convertbase(3, 62, boardString, true);
-    return outputString;
-}
-
-module.exports = {compressBoard};
-},{}],3:[function(require,module,exports){
 const {isHigh, maxSize, drawMove, drawGrid, drawWin} = require('./canvas.js');
-const {compressBoard} = require('./compression.js');
-//const {makeBotMove} = require('./alfabeta.js');
+//const {compressBoard} = require('./compression.js');
+//const {makeBotMove} = require('./bot.js');
 
-const board = [];
 let moveCounter = 0;
 const gridSize = 15;
 const winLength = 5;
+const board = new Array(gridSize * gridSize);
 let gameOver = false;
 let botFirst = false;
 const bot = -1;
@@ -251,8 +220,8 @@ function tryMove(event, windowSize) {
     const coords = getCoordsFromEvent(event, windowSize);
     console.log(coords);
     if(board[coords[0]][coords[1]] == 0) {
-        console.log(botFirst);
-        makePlayerMove(coords[0], coords[1], humanVhuman ? (botFirst ? (moveCounter % 2 == 0 ? bot : human) : (moveCounter % 2 == 0 ? human : bot)) : human, gridSize);
+        //console.log(botFirst);
+        makePlayerMove(coords[0], coords[1], humanVhuman ? (botFirst ? (moveCounter % 2 == 0 ? bot : human) : (moveCounter % 2 == 0 ? human : bot)) : human);
         checkGameEnd(coords[0], coords[1]);
     }
 }
@@ -261,7 +230,7 @@ function gameLoop(event, windowSize, canvas) {
     if(!gameOver) {
         tryMove(event, windowSize);
 
-        /*const botMove = makeBotMove();
+        /*const botMove = makeBotMove(bot, gridSize);
         makePlayerMove(botMove[0], botMove[1], bot);
         checkGameEnd(botMove[0], botMove[1]);*/
     }
@@ -269,36 +238,35 @@ function gameLoop(event, windowSize, canvas) {
         resetGame(windowSize, canvas);
 
         if(botFirst) {
-            /*const botMove = makeBotMove();
+            /*const botMove = makeBotMove(bot, gridSize);
             makePlayerMove(botMove[0], botMove[1], bot);
             checkGameEnd(botMove[0], botMove[1]);*/
         }
     }
 }
 
-module.exports = {gridSize, tryMove, createBoard, gameLoop};
-},{"./canvas.js":1,"./compression.js":2}],4:[function(require,module,exports){
+module.exports = {gridSize, winLength, board, tryMove, createBoard, gameLoop, checkWin};
+},{"./canvas.js":1}],3:[function(require,module,exports){
 const { create } = require('domain');
 const {resize_canvas} = require('./canvas.js');
-const {gameLoop} = require('./game.js');
-const {gridSize, createBoard} = require('./game.js');
+const {gameLoop, gridSize, createBoard, board} = require('./game.js');
 
 //website variables
 let cnv;
 
 //when window is loaded
 window.onload = function() {
+    createBoard();
+
     cnv = document.getElementById("myCanvas");
     cnv.addEventListener("mouseup", (event) => {gameLoop(event, [window.innerWidth, window.innerHeight], cnv);});
-    resize_canvas([window.innerWidth, window.innerHeight], cnv, gridSize);
-
-    createBoard();
+    resize_canvas([window.innerWidth, window.innerHeight], cnv, gridSize, board);
 }
 
 window.onresize = function() {
-    resize_canvas([window.innerWidth, window.innerHeight], cnv, gridSize);
+    resize_canvas([window.innerWidth, window.innerHeight], cnv, gridSize, board);
 }
-},{"./canvas.js":1,"./game.js":3,"domain":5}],5:[function(require,module,exports){
+},{"./canvas.js":1,"./game.js":2,"domain":4}],4:[function(require,module,exports){
 // This file should be ES5 compatible
 /* eslint prefer-spread:0, no-var:0, prefer-reflect:0, no-magic-numbers:0 */
 'use strict'
@@ -370,7 +338,7 @@ module.exports = (function () {
 	return domain
 }).call(this)
 
-},{"events":6}],6:[function(require,module,exports){
+},{"events":5}],5:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -869,4 +837,4 @@ function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
   }
 }
 
-},{}]},{},[4]);
+},{}]},{},[3]);
