@@ -17,5 +17,6 @@ There are two options of how to play against my bots:
 - **gomoku.html** is the web code that alows you to see and play the game
 - **bot.js** is the current solver (more will come)
 - **main.js** is the bundling root* that requires all the other files to run on the website
+- **bundle.js** is the bundled version* of all the javascript together
 
 \* I am using [Browserify](https://github.com/browserify/browserify) to bundle the .js modules together.
