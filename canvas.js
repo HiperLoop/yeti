@@ -33,9 +33,10 @@ function drawGrid(gridSize, windowSize, canvas) {
     }
 }
 
-function resize_canvas(windowSize, canvas, gridSize) {
+function resize_canvas(windowSize, canvas, gridSize, board) {
     resizeCanvas(windowSize, canvas);
     drawGrid(gridSize, windowSize, canvas);
+    drawBoard(board, gridSize);
 }
 
 function drawMove(i, j, player, gridSize) {
@@ -52,6 +53,16 @@ function drawMove(i, j, player, gridSize) {
     ctx.arc(j * rectSize + (rectSize/2), i * rectSize + (rectSize/2), rectSize/4, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
+}
+
+function drawBoard(board, gridSize) {
+    for(let i = 0; i < gridSize; ++i) {
+        for(let j = 0; j < gridSize; ++j) {
+            if(board[i][j] != 0) {
+                drawMove(i, j, board[i][j], gridSize);
+            }
+        }
+    }
 }
 
 function drawWin(start, end, gridSize) {
