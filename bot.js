@@ -1,3 +1,5 @@
+//const {winLength, gridSize, board} = require('./game.js');
+
 let possibleMoves = new Set();
 let previousPossibleMoves = new Set();
 let depthModifier = 0;
@@ -32,35 +34,30 @@ function autoBotDiff() {
     return ittCount;
 }
 
-function ammendPossibleMoves(x, y) {
+function ammendPossibleMoves(x, y, gridSize) {
     for(let i = 0; i < 81; ++i) {
         let targetX = x + Math.floor(i/9) - 4;
         let targetY = y + Math.floor(i%9) - 4;
 
         if(targetX < gridSize && targetX >= 0 && targetY < gridSize && targetY >= 0) {
-            if(board[targetX * gridSize + targetY] == 0) {
+            if(board[targetX][targetY] == 0) {
                 possibleMoves.add(targetX * gridSize + targetY);
             }
         }
     }
 }
 
-function makeBotMove(player) {
+function makeBotMove(player, gridSize) {
     let localDiff = 2;
-    let botMove = minimax(player, 0, localDiff, -1000000, 1000000, 0, 0);
+    let botMove = minimax(player, 0, localDiff, -1000000, 1000000, 0, 0, gridSize);
     console.log(localDiff);
     botX = Math.floor(botMove/gridSize)
     botY = botMove%gridSize;
-    drawMove(botX, botY, player);
-    ammendPossibleMoves(botX, botY);
-    if(player == 1) {crossToMove = false;}
-    else {crossToMove = true;}
-    ++moveCounter;
-    botWentlast = true;
-    won = checkWin(botX, botY, player, false);
+    ammendPossibleMoves(botX, botY, gridSize);
+    return ([botX, botY]);
 }
 
-function positionEval(check=false) {
+function positionEval(check=false, gridSize) {
     let evaluation = 0;
     let currentLength = 0;
     let previousPlayer = -2;
@@ -70,7 +67,7 @@ function positionEval(check=false) {
     //horizontal
     for(let i = 0; i < gridSize; ++i) {
         for(let j = 0; j < gridSize; ++j) {
-            currentPlayer = board[i * gridSize+j];
+            currentPlayer = board[i][j];
             if(currentPlayer != 0) {
                 if(previousPlayer == currentPlayer) {
                     ++currentLength;
@@ -104,7 +101,7 @@ function positionEval(check=false) {
     currentPlayer = 0;
     for(let i = 0; i < gridSize; ++i) {
         for(let j = 0; j < gridSize; ++j) {
-            currentPlayer = board[j * gridSize+i];
+            currentPlayer = board[j][i];
             if(currentPlayer != 0) {
                 if(previousPlayer == currentPlayer) {
                     ++currentLength;
@@ -134,7 +131,7 @@ function positionEval(check=false) {
     currentPlayer = 0;
     for(let j = gridSize - winLength; j >= 0; --j) {
         for(let i = 0; j+i < gridSize; ++i) {
-            currentPlayer = board[i * gridSize + j+i];
+            currentPlayer = board[i][j+i];
             if(currentPlayer != 0) {
                 if(previousPlayer == currentPlayer) {
                     ++currentLength;
@@ -163,7 +160,7 @@ function positionEval(check=false) {
     currentPlayer = 0;
     for(let j = gridSize - winLength; j > 0; --j) {
         for(let i = 0; j+i < gridSize; ++i) {
-            currentPlayer = board[(j+i) * gridSize + i];
+            currentPlayer = board[j+i][i];
             if(currentPlayer != 0) {
                 if(previousPlayer == currentPlayer) {
                     ++currentLength;
@@ -193,7 +190,7 @@ function positionEval(check=false) {
     currentPlayer = 0;
     for(let j = gridSize - winLength; j > 0; --j) {
         for(let i = 0; j+i < gridSize; ++i) {
-            currentPlayer = board[(gridSize-1-i) * gridSize + j+i];
+            currentPlayer = board[gridSize-1-i][j+i];
             if(currentPlayer != 0) {
                 if(previousPlayer == currentPlayer) {
                     ++currentLength;
@@ -222,7 +219,7 @@ function positionEval(check=false) {
     currentPlayer = 0;
     for(let j = gridSize - 1; j >= winLength - 1; --j) {
         for(let i = 0; j-i >= 0; ++i) {
-            currentPlayer = board[(j-i) * gridSize + i];
+            currentPlayer = board[j-i][i];
             if(currentPlayer != 0) {
                 if(previousPlayer == currentPlayer) {
                     ++currentLength;
@@ -251,7 +248,7 @@ function positionEval(check=false) {
     return evaluation;
 }
 
-function updateEval(origin) {
+function updateEval(origin, gridSize) {
     const player = board[origin];
     const x = Math.floor(origin/gridSize);
     const y = origin%gridSize;
@@ -388,10 +385,11 @@ function updateEval(origin) {
     return evaluation;
 }
 
-function minimax(player, depth, maxDepth, alpha, beta, lastEval, origin) {
+function minimax(player, depth, maxDepth, alpha, beta, lastEval, origin, gridSize) {
     const minStart = performance.now() * 1000;
     let moveCount = 0
     let bestMoveCount = 0;
+    console.log(gridSize);
     const moveEval = new Array(gridSize * gridSize);
     const moveIndex = new Array(gridSize * gridSize);
     const bestMoves = new Array(gridSize * gridSize);
@@ -401,10 +399,10 @@ function minimax(player, depth, maxDepth, alpha, beta, lastEval, origin) {
 
     const evalStart = performance.now() * 1000;
     if(depth == 0) {
-        currentEval = positionEval();
+        currentEval = positionEval(gridSize);
     }
     else {
-        currentEval += updateEval(origin);
+        currentEval += updateEval(origin, gridSize);
     }
     const evalEnd = performance.now() * 1000;
     const diff = evalEnd - evalStart;
@@ -424,7 +422,7 @@ function minimax(player, depth, maxDepth, alpha, beta, lastEval, origin) {
             board[i] = player;
             let prev = new Set(possibleMoves);
             ammendPossibleMoves(Math.floor(i/gridSize), i%gridSize);
-            let newEval = minimax(player * -1, depth + 1, maxDepth, alpha, beta, currentEval, i);
+            let newEval = minimax(player * -1, depth + 1, maxDepth, alpha, beta, currentEval, i, gridSize);
             possibleMoves = prev;
             board[i] = 0;
 
