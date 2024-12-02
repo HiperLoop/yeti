@@ -12,10 +12,6 @@ There are two options of how to play against my bots:
 2. I have a [website](https://smnd.sk/yeti/gomoku) where you can also play
 
 ## File structure
-### GitHub
-This folder includes GitHub specific files:
-- **LICENSE**
-- **README.md**
 
 ### Public
 This file includes files that run during runtime:
