@@ -12,16 +12,25 @@ There are two options of how to play against my bots:
 2. I have a [website](https://smnd.sk/yeti/gomoku) where you can also play
 
 ## File structure
-### Web elements
+### GitHub
+This folder includes GitHub specific files:
+- **LICENSE**
+- **README.md**
+
+### Public
+This file includes files that run during runtime:
+#### Web elements
 - **gomoku.html** is the web code that alows you to see and play the game
 - **look.css** is the graphics for the web
-### Game elemnts
+#### Game elemnts
 - **game.js** is recreation of the game Gomoku
 - **canvas.js** is drawing the game in the web browser
 - **bot.js** was the last solver version (surrently not working)
 - **PN_search.js** is where the proof-number search will be
-- **PN_tree** contains proof-number tree elements
-- **main.js** is the bundling root* that requires all the other files to run on the website
-- **bundle.js** is the bundled version* of all the javascript together
+- **PN_tree.js** contains proof-number tree elements
+- **main.js** is the root file that imports all the other files to run on the website
 
-\* I am using [Browserify](https://github.com/browserify/browserify) to bundle the .js modules together.
+### Src
+This file includes source code that is later compiled to javascript to run:
+- **tsconfig.json** is used to compile typescrpit files into javascript
+- **.ts** files are the source code for the **.js** counterparts with the same name in *Public*
