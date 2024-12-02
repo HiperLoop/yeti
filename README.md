@@ -12,9 +12,8 @@ There are two options of how to play against my bots:
 2. I have a [website](https://smnd.sk/yeti/gomoku) where you can also play
 
 ## File structure
-
 ### Public
-This file includes files that run during runtime:
+This folder includes files that run during runtime:
 #### Web elements
 - **gomoku.html** is the web code that alows you to see and play the game
 - **look.css** is the graphics for the web
@@ -27,6 +26,6 @@ This file includes files that run during runtime:
 - **main.js** is the root file that imports all the other files to run on the website
 
 ### Src
-This file includes source code that is later compiled to javascript to run:
+This folder includes source code that is later compiled to javascript to run:
 - **tsconfig.json** is used to compile typescrpit files into javascript
 - **.ts** files are the source code for the **.js** counterparts with the same name in *Public*
