@@ -23,6 +23,7 @@ This folder includes files that run during runtime:
 - **bot.js** was the last solver version (surrently not working)
 - **PN_search.js** is where the proof-number search will be
 - **PN_tree.js** contains proof-number tree elements
+-**DB-search.js** is the implementation of DB-search
 - **main.js** is the root file that imports all the other files to run on the website
 
 ### Src
