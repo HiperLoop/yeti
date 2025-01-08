@@ -1,4 +1,5 @@
 import { drawGrid, drawWin, drawMove, maxSize, isHigh } from './canvas.js';
+import { checkThreats } from './DB_search.js';
 let moveCounter = 0;
 export const gridSize = 15;
 const winLength = 5;
@@ -156,6 +157,7 @@ function tryMove(event, windowSize) {
     if (board[coords[0]][coords[1]] == 0) {
         //console.log(botFirst);
         makePlayerMove(coords[0], coords[1], humanVhuman ? (botFirst ? (moveCounter % 2 == 0 ? bot : human) : (moveCounter % 2 == 0 ? human : bot)) : human);
+        console.log(checkThreats(board));
         checkGameEnd(coords[0], coords[1]);
     }
 }
